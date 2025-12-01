@@ -1,8 +1,8 @@
 package gin
 
 import (
-	"github.com/harluo/gin/internal/core"
+	"github.com/harluo/baidu/internal/core"
 )
 
-// Engine 引擎
-type Engine = core.Engine
+// Engine 客户端
+type Engine = core.Client
