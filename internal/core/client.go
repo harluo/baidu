@@ -35,7 +35,7 @@ func newClient(
 	}
 }
 
-func (c *Client) Send(ctx context.Context, url string, req any, rsp any) (err error) {
+func (c *Client) Do(ctx context.Context, url string, req any, rsp any) (err error) {
 	url = fmt.Sprintf("https://aip.baidubce.com/rest/2.0/%s", url)
 	request := c.http.NewRequest()
 	request.SetContext(ctx).SetBody(req).SetResult(rsp)

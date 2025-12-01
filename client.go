@@ -1,4 +1,4 @@
-package gin
+package baidu
 
 import (
 	"github.com/harluo/baidu/internal/core"
