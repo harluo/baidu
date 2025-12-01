@@ -6,6 +6,6 @@ import (
 
 func init() {
 	di.New().Instance().Put(
-		newEngine,
+		newClient,
 	).Build().Apply()
 }
