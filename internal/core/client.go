@@ -38,8 +38,9 @@ func newClient(
 
 func (c *Client) Do(ctx context.Context, url string, req any, rsp any) (code uint32, err error) {
 	response := new(dto.Response)
+	response.Result = rsp
+
 	request := c.http.NewRequest()
-	response.Data = rsp
 	request.SetContext(ctx).SetBody(req).SetResult(response)
 
 	url = fmt.Sprintf("https://aip.baidubce.com/rest/2.0/%s", url)

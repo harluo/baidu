@@ -5,7 +5,7 @@ type Response struct {
 	Message string `json:"error_msg,omitempty"`
 	Code    uint32 `json:"error_code,omitempty"`
 
-	Data any `json:",inline"`
+	Result any `json:"result,omitempty"`
 }
 
 func (r *Response) IsError() bool {
