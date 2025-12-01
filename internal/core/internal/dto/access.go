@@ -4,7 +4,8 @@ import (
 	"time"
 )
 
-type AccessRsp struct {
-	Token   string    `json:"token,omitempty"`
-	Expired time.Time `json:"expired_in,omitempty"`
+type TokenRsp struct {
+	Access   string        `json:"access_token,omitempty"`
+	Refresh  string        `json:"refresh_token,omitempty"`
+	Duration time.Duration `json:"expires_in,omitempty"`
 }

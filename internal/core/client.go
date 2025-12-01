@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/goexl/exception"
 	"github.com/goexl/gox"
 	"github.com/goexl/gox/field"
 	"github.com/goexl/http"
@@ -35,11 +36,13 @@ func newClient(
 	}
 }
 
-func (c *Client) Do(ctx context.Context, url string, req any, rsp any) (err error) {
-	url = fmt.Sprintf("https://aip.baidubce.com/rest/2.0/%s", url)
+func (c *Client) Do(ctx context.Context, url string, req any, rsp any) (code uint32, err error) {
+	response := new(dto.Response)
 	request := c.http.NewRequest()
-	request.SetContext(ctx).SetBody(req).SetResult(rsp)
+	response.Data = rsp
+	request.SetContext(ctx).SetBody(req).SetResult(response)
 
+	url = fmt.Sprintf("https://aip.baidubce.com/rest/2.0/%s", url)
 	fields := gox.Fields[any]{
 		field.New("url", url),
 	}
@@ -48,15 +51,25 @@ func (c *Client) Do(ctx context.Context, url string, req any, rsp any) (err erro
 	} else if hpr, hpe := request.SetQueryParam("access_token", token).Post(url); nil != hpe {
 		err = hpe
 	} else if hpr.IsError() {
-		c.logger.Error("百度服务器返回错误", field.New("status", hpr.Status()), fields...)
+		bodyField := field.New("body", string(hpr.Body()))
+		message := "百度服务器返回错误"
+		err = exception.New().Code(1).Message(message).Field(bodyField, fields...).Build()
+		c.logger.Error(message, bodyField, fields...)
+	} else if response.IsError() {
+		bodyField := field.New("body", string(hpr.Body()))
+		message := "接口调用出错"
+		c.logger.Warn(message, bodyField, fields...)
 	}
+
+	// 将代码回传给上级调用
+	code = response.Code
 
 	return
 }
 
 func (c *Client) pickToken(ctx context.Context) (token string, err error) {
 	now := time.Now()
-	if now.After(c.expired.Add(time.Minute)) { // 留一分钟作为缓冲
+	if c.expired.Add(-time.Minute).After(now) { // 留一分钟作为缓冲
 		token = c.token
 	} else {
 		token, err = c.getToken(ctx)
@@ -77,14 +90,16 @@ func (c *Client) getToken(ctx context.Context) (token string, err error) {
 	fields := gox.Fields[any]{
 		field.New("url", url),
 	}
-	rsp := new(dto.AccessRsp)
+	rsp := new(dto.TokenRsp)
 	if hpr, hpe := request.SetContext(ctx).SetQueryParams(params).SetResult(rsp).Post(url); nil != hpe {
 		err = hpe
 	} else if hpr.IsError() {
-		c.logger.Error("百度服务器返回错误", field.New("status", hpr.Status()), fields...)
+		bodyField := field.New("body", string(hpr.Body()))
+		err = exception.New().Code(1).Message("百度服务器返回错误").Field(bodyField, fields...).Build()
+		c.logger.Error("百度服务器返回错误", bodyField, fields...)
 	} else {
-		c.token = rsp.Token
-		c.expired = rsp.Expired
+		c.token = rsp.Access
+		c.expired = time.Now().Add(time.Second * rsp.Duration)
 	}
 
 	return
