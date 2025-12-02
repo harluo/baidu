@@ -84,7 +84,7 @@ func (c *Client) getToken(ctx context.Context) (token string, err error) {
 	request := c.http.NewRequest()
 	params := map[string]string{
 		"grant_type":    "client_credentials",
-		"client_id":     c.config.Id,
+		"client_id":     c.config.Key,
 		"client_secret": c.config.Secret,
 	}
 
