@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/goexl/exception v0.0.4
 	github.com/goexl/gox v1.9.2
-	github.com/goexl/http v0.2.1
+	github.com/goexl/http v0.2.4
 	github.com/goexl/log v0.1.0
 	github.com/harluo/config v0.0.8
 	github.com/harluo/di v0.0.5
@@ -14,7 +14,6 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
-	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/drone/envsubst v1.0.3 // indirect
